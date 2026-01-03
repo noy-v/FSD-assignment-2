@@ -1,0 +1,41 @@
+### Variables
+@hostname = localhost
+@port = 3000
+@baseUrl = http://{{hostname}}:{{port}}
+@postId = 694a83eb769031bec8dc8c36
+@senderId = user_123
+
+### ----------------------------------------------------------------
+### POSTS API (Developer 1)
+### ----------------------------------------------------------------
+
+### 1. Add a New Post 
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+    "title": "My First Post",
+    "content": "This is the content of the post.",
+    "sender": "{{senderId}}"
+}
+
+### 2. Get All Posts 
+GET {{baseUrl}}/post
+
+### 3. Get a Post by ID 
+GET {{baseUrl}}/post/{{postId}}
+
+### 4. Get Posts by Sender 
+GET {{baseUrl}}/post?sender={{senderId}}
+
+### 5. Update a Post 
+PUT {{baseUrl}}/post/{{postId}}
+Content-Type: application/json
+
+{
+    "title": "Updated Title",
+    "content": "Updated content here.",
+    "sender": "{{senderId}}"
+}
+
+ 
