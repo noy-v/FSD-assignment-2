@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import postRoutes from "./routes/post_routes";
+import userRoutes from "./routes/user_routes";
 
 // Load environment variables
 dotenv.config();
@@ -13,6 +14,7 @@ const app: Express = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/post", postRoutes);
+app.use("/user", userRoutes);
 
 // Database Connection
 const db = mongoose.connection;
