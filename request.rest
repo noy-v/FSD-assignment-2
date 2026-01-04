@@ -4,57 +4,6 @@
 @baseUrl = http://{{hostname}}:{{port}}
 @postId = 694a83eb769031bec8dc8c36
 @senderId = user_123
-@userId = 695a8639fcc4ae60a9b8cfff
-@username = john_doe
-
-### ----------------------------------------------------------------
-### USERS API (Developer 2)
-### ----------------------------------------------------------------
-
-### 1. Create a New User
-POST {{baseUrl}}/user
-Content-Type: application/json
-
-{
-    "username": "john_doe",
-    "email": "john@example.com",
-    "password": "securePassword123"
-}
-
-### 1b. Create Another User
-POST {{baseUrl}}/user
-Content-Type: application/json
-
-{
-    "username": "jane_smith",
-    "email": "jane@example.com",
-    "password": "securePassword456"
-}
-
-### 2. Get All Users
-GET {{baseUrl}}/user
-
-### 3. Get User by ID
-GET {{baseUrl}}/user/id/{{userId}}
-
-### 4. Get User by Username
-GET {{baseUrl}}/user/username/{{username}}
-
-### 4b. Get User by Email
-GET {{baseUrl}}/user?email=john@example.com
-
-### 5. Update a User
-PUT {{baseUrl}}/user/{{userId}}
-Content-Type: application/json
-
-{
-    "username": "john_doe_updated",
-    "email": "john.updated@example.com",
-    "password": "newSecurePassword789"
-}
-
-### 6. Delete a User
-DELETE {{baseUrl}}/user/{{userId}}
 
 ### ----------------------------------------------------------------
 ### POSTS API (Developer 1)
@@ -89,5 +38,4 @@ Content-Type: application/json
     "sender": "{{senderId}}"
 }
 
-### 6. Delete a Post
-DELETE {{baseUrl}}/post/{{postId}}
+ 
