@@ -20,3 +20,5 @@ router.put("/:id", userController.updateItem);
 
 // 6. Delete a User
 router.delete("/:id", userController.deleteItem);
+
+export default router;
