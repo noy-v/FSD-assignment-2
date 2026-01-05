@@ -140,6 +140,9 @@ describe("Authentication Tests", () => {
         });
 
         test("Should handle database errors during registration", async () => {
+            // Mock console.error to suppress error output in tests
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
             // Create a user to establish connection
             await request(app)
                 .post("/auth/register")
@@ -157,6 +160,9 @@ describe("Authentication Tests", () => {
 
             // Reconnect for other tests
             await mongoose.connect(testDbUrl);
+
+            // Restore console.error
+            consoleErrorSpy.mockRestore();
         });
 
         test("Should store refresh token in user record", async () => {
@@ -296,6 +302,9 @@ describe("Authentication Tests", () => {
             // Close the database connection to simulate error
             await mongoose.connection.close();
 
+            // Mock console.error to suppress error output in tests
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
             const response = await request(app)
                 .post("/auth/login")
                 .send({
@@ -308,6 +317,9 @@ describe("Authentication Tests", () => {
 
             // Reconnect for other tests
             await mongoose.connect(testDbUrl);
+
+            // Restore console.error
+            consoleErrorSpy.mockRestore();
         });
     });
 
@@ -454,6 +466,9 @@ describe("Authentication Tests", () => {
             // Close database to simulate error
             await mongoose.connection.close();
 
+            // Mock console.error to suppress error output in tests
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
             const response = await request(app)
                 .post("/auth/refresh")
                 .send({ refreshToken });
@@ -463,6 +478,9 @@ describe("Authentication Tests", () => {
 
             // Reconnect for other tests
             await mongoose.connect(testDbUrl);
+
+            // Restore console.error
+            consoleErrorSpy.mockRestore();
         });
     });
 
