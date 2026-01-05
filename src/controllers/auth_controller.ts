@@ -18,12 +18,12 @@ const generateToken = (userId: string): Tokens => {
     const exp: number = parseInt(process.env.JWT_EXPIRES_IN || "3600"); // 1 hour
     const refreshexp: number = parseInt(process.env.JWT_REFRESH_EXPIRES_IN || "86400"); // 24 hours
     const token = jwt.sign(
-        { userId: userId },
+        { userId: userId, timestamp: Date.now() },
         secret,
         { expiresIn: exp }
     );
     const refreshToken = jwt.sign(
-        { userId: userId },
+        { userId: userId, timestamp: Date.now() + 1 },
         secret,
         { expiresIn: refreshexp }
     );
@@ -134,9 +134,11 @@ class AuthController {
 
             // Generate new tokens
             const tokens = generateToken(user._id.toString());
-            user.refreshToken.push(tokens.refreshToken);
+            
             // Remove old refresh token
             user.refreshToken = user.refreshToken.filter(rt => rt !== refreshToken);
+            // Add new refresh token
+            user.refreshToken.push(tokens.refreshToken);
             await user.save();
 
             res.status(200).json(tokens);
