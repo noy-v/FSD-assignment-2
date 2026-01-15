@@ -1,4 +1,4 @@
-const { createDefaultPreset } = require("ts-jest");
+﻿const { createDefaultPreset } = require("ts-jest");
 
 const tsJestTransformCfg = createDefaultPreset().transform;
 
@@ -8,4 +8,15 @@ module.exports = {
   transform: {
     ...tsJestTransformCfg,
   },
+  collectCoverageFrom: [
+    "src/**/*.ts",
+    "!src/**/*.d.ts",
+    "!src/server.ts",
+    "!src/tests/**",
+  ],
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov", "html"],
+  testMatch: ["**/tests/**/*.test.ts"],
+  testTimeout: 30000,
+  maxWorkers: 1, // Run tests sequentially to avoid database conflicts
 };
