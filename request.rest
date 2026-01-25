@@ -4,8 +4,10 @@
 @baseUrl = http://{{hostname}}:{{port}}
 
 ### ----------------------------------------------------------------
-### STEP 1: Register a user to get a valid userId
+### AUTHENTICATION ENDPOINTS
 ### ----------------------------------------------------------------
+
+### STEP 1: Register a user
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
@@ -14,6 +16,37 @@ Content-Type: application/json
     "email": "test@example.com",
     "password": "password123"
 }
+
+### STEP 2: Login (copy refreshToken from response)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### STEP 3: Logout (paste refreshToken from login/register response)
+@refreshToken = PASTE_YOUR_REFRESH_TOKEN_HERE
+
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+### Refresh Token (use this to get new tokens)
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+### ----------------------------------------------------------------
+### POSTS API
+### ----------------------------------------------------------------
 
 ### ----------------------------------------------------------------
 ### STEP 2: Create a post (copy the userId from the JWT or get user from DB)

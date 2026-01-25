@@ -484,8 +484,7 @@ describe("Authentication Tests", () => {
         });
     });
 
-    // ==================== COMMENTED OUT LOGOUT TEST (NOT IMPLEMENTED) ====================
-    /*
+    // ==================== LOGOUT TESTS ====================
     describe("POST /auth/logout", () => {
         test("Should logout successfully and remove refresh token", async () => {
             // Register user
@@ -514,7 +513,7 @@ describe("Authentication Tests", () => {
                 .post("/auth/logout")
                 .send({});
 
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(401);
             expect(response.body).toHaveProperty("error");
         });
 
@@ -526,8 +525,52 @@ describe("Authentication Tests", () => {
             expect(response.status).toBe(401);
             expect(response.body).toHaveProperty("error");
         });
+
+        test("Should fail logout with token not in user's list", async () => {
+            // Register user
+            await request(app)
+                .post("/auth/register")
+                .send(testUser);
+
+            const user = await UserModel.findOne({ email: testUser.email });
+
+            // Create valid token but not in user's list
+            const secret = process.env.JWT_SECRET || "secretkey";
+            const validButUnregisteredToken = jwt.sign(
+                { userId: user?._id.toString() },
+                secret,
+                { expiresIn: "24h" }
+            );
+
+            const response = await request(app)
+                .post("/auth/logout")
+                .send({ refreshToken: validButUnregisteredToken });
+
+            expect(response.status).toBe(401);
+            expect(response.body).toHaveProperty("error");
+        });
+
+        test("Should not be able to use refresh token after logout", async () => {
+            // Register user
+            const registerRes = await request(app)
+                .post("/auth/register")
+                .send(testUser);
+
+            const refreshToken = registerRes.body.refreshToken;
+
+            // Logout
+            await request(app)
+                .post("/auth/logout")
+                .send({ refreshToken });
+
+            // Try to refresh with logged out token
+            const refreshRes = await request(app)
+                .post("/auth/refresh")
+                .send({ refreshToken });
+
+            expect(refreshRes.status).toBe(401);
+        });
     });
-    */
 
     // ==================== INTEGRATION TESTS ====================
 
