@@ -7,13 +7,13 @@ class PostController extends BaseController<IPost> {
         super(PostModel);
     }
 
-    // Override or extend getAll to handle ?sender=<sender_id>
+    // Override or extend getAll to handle ?userId=<user_id>
     async getAll(req: Request, res: Response): Promise<void> {
-        const senderFilter = req.query.sender as string | undefined;
+        const userIdFilter = req.query.userId as string | undefined;
         try {
-            if (senderFilter) {
-                // If sender query exists: /post?sender=123
-                const posts = await this.model.find({ sender: senderFilter });
+            if (userIdFilter) {
+                // If userId query exists: /post?userId=123
+                const posts = await this.model.find({ userId: userIdFilter });
                 res.status(200).send(posts);
             } else {
                 // Standard Get All: /post

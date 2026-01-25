@@ -4,7 +4,7 @@ import CommentModel, { ICommentDocument } from "../models/comment_model";
 
 interface CommentQuery {
     postId?: string;
-    sender?: string;
+    userId?: string;
 }
 
 class CommentController extends BaseController<ICommentDocument> {
@@ -12,14 +12,14 @@ class CommentController extends BaseController<ICommentDocument> {
         super(CommentModel);
     }
 
-    // Override getAll to handle ?postId=<post_id> and ?sender=<sender_id>
+    // Override getAll to handle ?postId=<post_id> and ?userId=<user_id>
     async getAll(req: Request, res: Response): Promise<void> {
-        const { postId, sender } = req.query as CommentQuery;
+        const { postId, userId } = req.query as CommentQuery;
         try {
             // Build filter object based on query parameters
             const filter: Partial<CommentQuery> = {};
             if (postId) filter.postId = postId;
-            if (sender) filter.sender = sender;
+            if (userId) filter.userId = userId;
 
             // If there are filters, use them; otherwise get all comments
             if (Object.keys(filter).length > 0) {

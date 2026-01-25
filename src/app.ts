@@ -5,6 +5,8 @@ import bodyParser from "body-parser";
 import postRoutes from "./routes/post_routes";
 import userRoutes from "./routes/user_routes";
 import authRoutes from "./routes/auth_routes";
+import commentRoutes from "./routes/comment_routes";
+
 
 // Load environment variables
 dotenv.config();
@@ -17,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/post", postRoutes);
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
+app.use("/comment", commentRoutes);
 
 // Database Connection
 const db = mongoose.connection;
