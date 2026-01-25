@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import commentController from "../controllers/comment_controller";
+import authMiddleware from "../middleware/auth_middleware";
 
 const router: Router = express.Router();
 
@@ -39,8 +40,18 @@ const router: Router = express.Router();
  *             schema:
  *               type: string
  *             example: "Comment validation failed: content: Path `content` is required."
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "Access denied. No token provided."
+ *     security:
+ *       - bearerAuth: []
  */
-router.post("/", commentController.create);
+router.post("/", authMiddleware, commentController.create);
 
 /**
  * @swagger
@@ -192,8 +203,16 @@ router.get("/:id", commentController.getById);
  *           application/json:
  *             schema:
  *               type: string
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *     security:
+ *       - bearerAuth: []
  */
-router.put("/:id", commentController.updateItem);
+router.put("/:id", authMiddleware, commentController.updateItem);
 
 /**
  * @swagger
@@ -235,7 +254,15 @@ router.put("/:id", commentController.updateItem);
  *           application/json:
  *             schema:
  *               type: string
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *     security:
+ *       - bearerAuth: []
  */
-router.delete("/:id", commentController.deleteItem);
+router.delete("/:id", authMiddleware, commentController.deleteItem);
 
 export default router;

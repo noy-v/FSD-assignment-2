@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import postController from "../controllers/post_controller";
+import authMiddleware from "../middleware/auth_middleware";
 
 const router: Router = express.Router();
 
@@ -39,8 +40,18 @@ const router: Router = express.Router();
  *             schema:
  *               type: string
  *             example: "Post validation failed: title: Path `title` is required."
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "Access denied. No token provided."
+ *     security:
+ *       - bearerAuth: []
  */
-router.post("/", postController.create);
+router.post("/", authMiddleware, postController.create);
 
 /**
  * @swagger
@@ -191,8 +202,16 @@ router.get("/:id", postController.getById);
  *           application/json:
  *             schema:
  *               type: string
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *     security:
+ *       - bearerAuth: []
  */
-router.put("/:id", postController.updateItem);
+router.put("/:id", authMiddleware, postController.updateItem);
 
 /**
  * @swagger
@@ -234,7 +253,15 @@ router.put("/:id", postController.updateItem);
  *           application/json:
  *             schema:
  *               type: string
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *     security:
+ *       - bearerAuth: []
  */
-router.delete("/:id", postController.deleteItem);
+router.delete("/:id", authMiddleware, postController.deleteItem);
 
 export default router;
