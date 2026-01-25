@@ -146,6 +146,42 @@ class AuthController {
             return sendError(res, "Invalid refresh token", 401);
         }
     }
+
+    // Logout user
+    async logout(req: Request, res: Response): Promise<void> {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return sendError(res, "Refresh token is required", 401);
+        }
+
+        try {
+            const secret: string = process.env.JWT_SECRET || "secretkey";
+            const decoded: any = jwt.verify(refreshToken, secret);
+
+            const user = await UserModel.findById(decoded.userId);
+            if (!user) {
+                return sendError(res, "Invalid refresh token", 401);
+            }
+
+            // Check if the refresh token exists in user's tokens
+            if (!user.refreshToken.includes(refreshToken)) {
+                return sendError(res, "Invalid refresh token", 401);
+            }
+
+            // Remove the refresh token from user's tokens (invalidate it)
+            user.refreshToken = user.refreshToken.filter(rt => rt !== refreshToken);
+            await user.save();
+
+            res.status(200).json({ message: "Logged out successfully" });
+        } catch (error) {
+            // Even if token is expired/invalid, try to remove it if possible
+            if (error instanceof jwt.JsonWebTokenError) {
+                return sendError(res, "Invalid refresh token", 401);
+            }
+            return sendError(res, "Logout failed", 500);
+        }
+    }
 }
 
 export default new AuthController();
