@@ -1,5 +1,5 @@
 {
-  "name": "fsd-assignment-1",
+  "name": "fsd-assignment-2",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
@@ -18,9 +18,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/noy-v/FSD-assignment-1/issues"
+    "url": "https://github.com/noy-v/FSD-assignment-2/issues"
   },
-  "homepage": "https://github.com/noy-v/FSD-assignment-1#readme",
+  "homepage": "https://github.com/noy-v/FSD-assignment-2#readme",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.12",
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@types/express": "^4.17.25",
     "@types/node": "^20.10.6",
+    "@types/swagger-jsdoc": "^6.0.4",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
