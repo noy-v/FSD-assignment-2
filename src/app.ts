@@ -2,6 +2,8 @@ import express, { Express } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger";
 import postRoutes from "./routes/post_routes";
 import userRoutes from "./routes/user_routes";
 import authRoutes from "./routes/auth_routes";
@@ -16,6 +18,11 @@ const app: Express = express();
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Swagger Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Routes
 app.use("/post", postRoutes);
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
