@@ -1,9 +1,9 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema, Types } from "mongoose";
 
 export interface IComment {
     content: string;
-    sender: string;
-    postId: string;
+    userId: Types.ObjectId;
+    postId: Types.ObjectId;
 }
 
 export interface ICommentDocument extends IComment, Document {}
@@ -13,12 +13,14 @@ const commentSchema: Schema<ICommentDocument> = new mongoose.Schema({
         type: String,
         required: true
     },
-    sender: {
-        type: String,
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "Users",
         required: true
     },
     postId: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Posts",
         required: true
     }
 });

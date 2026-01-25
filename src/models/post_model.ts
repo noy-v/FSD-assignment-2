@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IPost extends Document {
     title: string;
     content: string;
-    sender: string;
+    userId: Types.ObjectId;
 }
 
 const postSchema = new Schema<IPost>({
@@ -15,8 +15,9 @@ const postSchema = new Schema<IPost>({
         type: String,
         required: true
     },
-    sender: {
-        type: String,
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "Users",
         required: true
     }
 });

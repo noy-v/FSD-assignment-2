@@ -2,8 +2,54 @@
 @hostname = localhost
 @port = 3000
 @baseUrl = http://{{hostname}}:{{port}}
-@postId = 694a83eb769031bec8dc8c36
-@senderId = user_123
+
+### ----------------------------------------------------------------
+### STEP 1: Register a user to get a valid userId
+### ----------------------------------------------------------------
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### ----------------------------------------------------------------
+### STEP 2: Create a post (copy the userId from the JWT or get user from DB)
+### Replace the userId below with an actual MongoDB ObjectId from your database
+### ----------------------------------------------------------------
+@userId = 678f1234567890abcdef1234
+
+POST {{baseUrl}}/post
+Content-Type: application/json
+
+{
+    "title": "My First Post",
+    "content": "This is the content of the post.",
+    "userId": "{{userId}}"
+}
+
+### ----------------------------------------------------------------
+### STEP 3: Add a comment to the post
+### Replace postId with the _id from the created post
+### ----------------------------------------------------------------
+@postId = 678f1234567890abcdef5678
+
+POST {{baseUrl}}/comment
+Content-Type: application/json
+
+{
+    "content": "This is a comment!",
+    "userId": "{{userId}}",
+    "postId": "{{postId}}"
+}
+
+### Get all posts by a user
+GET {{baseUrl}}/post?userId={{userId}}
+
+### Get all comments for a post
+GET {{baseUrl}}/comment?postId={{postId}}
 
 ### ----------------------------------------------------------------
 ### POSTS API (Developer 1)
@@ -16,7 +62,7 @@ Content-Type: application/json
 {
     "title": "My First Post",
     "content": "This is the content of the post.",
-    "sender": "{{senderId}}"
+    "userId": "{{userId}}"
 }
 
 ### 2. Get All Posts 
@@ -25,8 +71,8 @@ GET {{baseUrl}}/post
 ### 3. Get a Post by ID 
 GET {{baseUrl}}/post/{{postId}}
 
-### 4. Get Posts by Sender 
-GET {{baseUrl}}/post?sender={{senderId}}
+### 4. Get Posts by User 
+GET {{baseUrl}}/post?userId={{userId}}
 
 ### 5. Update a Post 
 PUT {{baseUrl}}/post/{{postId}}
@@ -35,7 +81,7 @@ Content-Type: application/json
 {
     "title": "Updated Title",
     "content": "Updated content here.",
-    "sender": "{{senderId}}"
+    "userId": "{{userId}}"
 }
 
  
