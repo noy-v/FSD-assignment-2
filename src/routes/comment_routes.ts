@@ -3,19 +3,20 @@ import commentController from "../controllers/comment_controller";
 
 const router: Router = express.Router();
 
-// Add a New Comment
+// 1. Add a New Comment
 router.post("/", commentController.create);
 
-// Get All Comments
+// 2. Get All Comments (also supports filtering by postId and sender)
 router.get("/", commentController.getAll);
 
-// Get a Comment by ID
+// 3. Get a Comment by ID
 router.get("/:id", commentController.getById);
 
-// Update a Comment
+// 4. Update a Comment
 router.put("/:id", commentController.updateItem);
 
-// Delete a Comment
+// 5. Delete a Comment
 router.delete("/:id", commentController.deleteItem);
 
 export default router;
+
