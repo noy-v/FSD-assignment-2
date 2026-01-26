@@ -204,8 +204,24 @@ describe("User Endpoint Tests", () => {
                 .get("/user");
 
             expect(response.status).toBe(400);
+            expect(typeof response.text).toBe("string");
+            expect(response.text.length).toBeGreaterThan(0);
 
             // Reconnect for other tests
+            await mongoose.connect(testDbUrl);
+        });
+
+        test("Should handle database errors when filtering by email", async () => {
+            // Close database to simulate error
+            await mongoose.connection.close();
+
+            const response = await request(app).get("/user?email=test@example.com");
+
+            expect(response.status).toBe(400);
+            expect(typeof response.text).toBe("string");
+            expect(response.text.length).toBeGreaterThan(0);
+
+            // Reconnect database
             await mongoose.connect(testDbUrl);
         });
     });
