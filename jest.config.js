@@ -19,4 +19,6 @@ module.exports = {
   testMatch: ["**/tests/**/*.test.ts"],
   testTimeout: 30000,
   maxWorkers: 1, // Run tests sequentially to avoid database conflicts
+  forceExit: true, // Force Jest to exit after all tests complete
+  detectOpenHandles: false, // Disable open handle detection in CI
 };

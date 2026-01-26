@@ -737,6 +737,48 @@ describe("Comment Tests", () => {
             const getByUserRes = await request(app).get(`/comment?userId=${userId}`);
             expect(getByUserRes.status).toBe(200);
         });
+
+        test("Should handle database errors in getAll", async () => {
+            // Close database to simulate error
+            await mongoose.connection.close();
+
+            const response = await request(app).get("/comment");
+
+            expect(response.status).toBe(400);
+            expect(typeof response.text).toBe("string");
+            expect(response.text.length).toBeGreaterThan(0);
+
+            // Reconnect database
+            await mongoose.connect(testDbUrl);
+        });
+
+        test("Should handle database errors when filtering by postId", async () => {
+            // Close database to simulate error
+            await mongoose.connection.close();
+
+            const response = await request(app).get("/comment?postId=123");
+
+            expect(response.status).toBe(400);
+            expect(typeof response.text).toBe("string");
+            expect(response.text.length).toBeGreaterThan(0);
+
+            // Reconnect database
+            await mongoose.connect(testDbUrl);
+        });
+
+        test("Should handle database errors when filtering by userId", async () => {
+            // Close database to simulate error
+            await mongoose.connection.close();
+
+            const response = await request(app).get("/comment?userId=123");
+
+            expect(response.status).toBe(400);
+            expect(typeof response.text).toBe("string");
+            expect(response.text.length).toBeGreaterThan(0);
+
+            // Reconnect database
+            await mongoose.connect(testDbUrl);
+        });
     });
 });
 
