@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "./base_controller";
 import CommentModel, { ICommentDocument } from "../models/comment_model";
+import { AuthRequest } from "../middleware/auth_middleware";
 
 interface CommentQuery {
     postId?: string;
@@ -29,6 +30,42 @@ class CommentController extends BaseController<ICommentDocument> {
                 // Get all comments
                 super.getAll(req, res);
             }
+        } catch (error) {
+            res.status(400).send((error as Error).message);
+        }
+    }
+
+    async updateItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const comment = await this.model.findById(req.params.id);
+            if (!comment) {
+                res.status(404).send("Not found");
+                return;
+            }
+            if (comment.userId.toString() !== req.userId) {
+                res.status(403).json({ error: "You can only update your own comments" });
+                return;
+            }
+            const updated = await this.model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            res.status(200).send(updated);
+        } catch (error) {
+            res.status(400).send((error as Error).message);
+        }
+    }
+
+    async deleteItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const comment = await this.model.findById(req.params.id);
+            if (!comment) {
+                res.status(404).send("Not found");
+                return;
+            }
+            if (comment.userId.toString() !== req.userId) {
+                res.status(403).json({ error: "You can only delete your own comments" });
+                return;
+            }
+            await this.model.findByIdAndDelete(req.params.id);
+            res.status(200).send({ message: "Deleted successfully" });
         } catch (error) {
             res.status(400).send((error as Error).message);
         }

@@ -458,7 +458,7 @@ describe("Comment Tests", () => {
             expect(response.status).toBe(404);
         });
 
-        test("Authenticated user can update comment (different user scenario)", async () => {
+        test("Should fail when user tries to update another user's comment", async () => {
             // Create a comment by user 1
             const createRes = await request(app)
                 .post("/comment")
@@ -471,7 +471,7 @@ describe("Comment Tests", () => {
 
             const commentId = createRes.body._id;
 
-            // User 2 tries to update it (Note: Current implementation allows any authenticated user)
+            // User 2 tries to update it - should be forbidden
             const response = await request(app)
                 .put(`/comment/${commentId}`)
                 .set("Authorization", `Bearer ${accessToken2}`)
@@ -479,8 +479,12 @@ describe("Comment Tests", () => {
                     content: "Updated by User 2"
                 });
 
-            // Current implementation allows any authenticated user to update
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(403);
+            expect(response.body.error).toContain("your own comments");
+
+            // Verify comment was NOT updated
+            const comment = await CommentModel.findById(commentId);
+            expect(comment?.content).toBe("Original comment");
         });
     });
 
@@ -565,6 +569,32 @@ describe("Comment Tests", () => {
                 .set("Authorization", `Bearer ${accessToken}`);
 
             expect(response.status).toBe(404);
+        });
+
+        test("Should fail when user tries to delete another user's comment", async () => {
+            // Create a comment by user 1
+            const createRes = await request(app)
+                .post("/comment")
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send({
+                    content: "Comment to delete",
+                    userId,
+                    postId
+                });
+
+            const commentId = createRes.body._id;
+
+            // User 2 tries to delete it - should be forbidden
+            const response = await request(app)
+                .delete(`/comment/${commentId}`)
+                .set("Authorization", `Bearer ${accessToken2}`);
+
+            expect(response.status).toBe(403);
+            expect(response.body.error).toContain("your own comments");
+
+            // Verify comment was NOT deleted
+            const comment = await CommentModel.findById(commentId);
+            expect(comment).toBeTruthy();
         });
     });
 
