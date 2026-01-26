@@ -388,7 +388,7 @@ describe("Post Tests", () => {
             expect(response.status).toBe(404);
         });
 
-        test("Authenticated user can update post (different user scenario)", async () => {
+        test("Should fail when user tries to update another user's post", async () => {
             // Create a post by user 1
             const createRes = await request(app)
                 .post("/post")
@@ -400,7 +400,7 @@ describe("Post Tests", () => {
 
             const postId = createRes.body._id;
 
-            // User 2 tries to update it (Note: Current implementation allows any authenticated user)
+            // User 2 tries to update it - should be forbidden
             const response = await request(app)
                 .put(`/post/${postId}`)
                 .set("Authorization", `Bearer ${accessToken2}`)
@@ -408,8 +408,12 @@ describe("Post Tests", () => {
                     title: "Updated by User 2"
                 });
 
-            // Current implementation allows any authenticated user to update
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(403);
+            expect(response.body.error).toContain("your own posts");
+
+            // Verify post was NOT updated
+            const post = await PostModel.findById(postId);
+            expect(post?.title).toBe(testPost.title);
         });
     });
 
@@ -491,6 +495,31 @@ describe("Post Tests", () => {
                 .set("Authorization", `Bearer ${accessToken}`);
 
             expect(response.status).toBe(404);
+        });
+
+        test("Should fail when user tries to delete another user's post", async () => {
+            // Create a post by user 1
+            const createRes = await request(app)
+                .post("/post")
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send({
+                    ...testPost,
+                    userId
+                });
+
+            const postId = createRes.body._id;
+
+            // User 2 tries to delete it - should be forbidden
+            const response = await request(app)
+                .delete(`/post/${postId}`)
+                .set("Authorization", `Bearer ${accessToken2}`);
+
+            expect(response.status).toBe(403);
+            expect(response.body.error).toContain("your own posts");
+
+            // Verify post was NOT deleted
+            const post = await PostModel.findById(postId);
+            expect(post).toBeTruthy();
         });
     });
 

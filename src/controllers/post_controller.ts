@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import BaseController from "./base_controller";
 import PostModel, { IPost } from "../models/post_model";
+import { AuthRequest } from "../middleware/auth_middleware";
 
 class PostController extends BaseController<IPost> {
     constructor() {
@@ -19,6 +20,42 @@ class PostController extends BaseController<IPost> {
                 // Standard Get All: /post
                 super.getAll(req, res);
             }
+        } catch (error) {
+            res.status(400).send((error as Error).message);
+        }
+    }
+
+    async updateItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const post = await this.model.findById(req.params.id);
+            if (!post) {
+                res.status(404).send("Not found");
+                return;
+            }
+            if (post.userId.toString() !== req.userId) {
+                res.status(403).json({ error: "You can only update your own posts" });
+                return;
+            }
+            const updated = await this.model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            res.status(200).send(updated);
+        } catch (error) {
+            res.status(400).send((error as Error).message);
+        }
+    }
+
+    async deleteItem(req: AuthRequest, res: Response): Promise<void> {
+        try {
+            const post = await this.model.findById(req.params.id);
+            if (!post) {
+                res.status(404).send("Not found");
+                return;
+            }
+            if (post.userId.toString() !== req.userId) {
+                res.status(403).json({ error: "You can only delete your own posts" });
+                return;
+            }
+            await this.model.findByIdAndDelete(req.params.id);
+            res.status(200).send({ message: "Deleted successfully" });
         } catch (error) {
             res.status(400).send((error as Error).message);
         }
