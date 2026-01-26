@@ -1468,5 +1468,80 @@ describe("Authentication Tests", () => {
 
             UserModel.prototype.save = originalSave;
         });
+
+        test("Should throw error when JWT_SECRET is not defined", async () => {
+            // Save original JWT_SECRET
+            const originalSecret = process.env.JWT_SECRET;
+            
+            // Remove JWT_SECRET temporarily
+            delete process.env.JWT_SECRET;
+
+            // Try to register - this should fail because getSecret() will throw
+            const response = await request(app)
+                .post("/auth/register")
+                .send({
+                    username: "testsecret",
+                    email: "testsecret@example.com",
+                    password: "Pass123!@#"
+                });
+
+            // Should get error response
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty("error");
+            expect(response.body.error).toContain("JWT_SECRET environment variable is not defined");
+
+            // Restore JWT_SECRET
+            process.env.JWT_SECRET = originalSecret;
+        });
+
+        test("Should throw error in refresh when JWT_SECRET is not defined", async () => {
+            // Register first with JWT_SECRET set
+            await request(app)
+                .post("/auth/register")
+                .send(testUser);
+
+            const user = await UserModel.findOne({ email: testUser.email });
+            const refreshToken = user?.refreshToken[0];
+
+            // Save and remove JWT_SECRET
+            const originalSecret = process.env.JWT_SECRET;
+            delete process.env.JWT_SECRET;
+
+            // Try to refresh - should fail
+            const response = await request(app)
+                .post("/auth/refresh")
+                .send({ refreshToken });
+
+            expect(response.status).toBe(401);
+            expect(response.body).toHaveProperty("error");
+
+            // Restore JWT_SECRET
+            process.env.JWT_SECRET = originalSecret;
+        });
+
+        test("Should throw error in logout when JWT_SECRET is not defined", async () => {
+            // Register first with JWT_SECRET set
+            await request(app)
+                .post("/auth/register")
+                .send(testUser);
+
+            const user = await UserModel.findOne({ email: testUser.email });
+            const refreshToken = user?.refreshToken[0];
+
+            // Save and remove JWT_SECRET
+            const originalSecret = process.env.JWT_SECRET;
+            delete process.env.JWT_SECRET;
+
+            // Try to logout - should fail with 500 because error is thrown before JWT verification
+            const response = await request(app)
+                .post("/auth/logout")
+                .send({ refreshToken });
+
+            expect(response.status).toBe(500);
+            expect(response.body).toHaveProperty("error");
+
+            // Restore JWT_SECRET
+            process.env.JWT_SECRET = originalSecret;
+        });
     });
 });

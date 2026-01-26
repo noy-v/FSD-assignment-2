@@ -8,13 +8,21 @@ const sendError = (res: Response, message: string, code?: number) => {
     res.status(errCode).json({ error: message });
 }
 
+const getSecret = (): string => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        throw new Error("JWT_SECRET environment variable is not defined");
+    }
+    return secret;
+};
+
 type Tokens = {
     token: string;
     refreshToken: string;
 }
 
 const generateToken = (userId: string): Tokens => {
-    const secret: string = process.env.JWT_SECRET || "secretkey";
+    const secret: string = getSecret();
     const exp: number = parseInt(process.env.JWT_EXPIRES_IN || "3600"); // 1 hour
     const refreshexp: number = parseInt(process.env.JWT_REFRESH_EXPIRES_IN || "86400"); // 24 hours
     const token = jwt.sign(
@@ -71,7 +79,6 @@ class AuthController {
             // Send tokens back to user
             res.status(201).json(tokens);
         } catch (error) {
-            console.error("Registration error:", error);
             return sendError(res, (error as Error).message || "Registration failed", 400);
         }
     }
@@ -117,7 +124,7 @@ class AuthController {
         }
 
         try {
-            const secret: string = process.env.JWT_SECRET || "secretkey";
+            const secret: string = getSecret();
             const decoded: any = jwt.verify(refreshToken, secret);
 
             const user = await UserModel.findById(decoded.userId);
@@ -156,7 +163,7 @@ class AuthController {
         }
 
         try {
-            const secret: string = process.env.JWT_SECRET || "secretkey";
+            const secret: string = getSecret();
             const decoded: any = jwt.verify(refreshToken, secret);
 
             const user = await UserModel.findById(decoded.userId);
